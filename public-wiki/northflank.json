@@ -36,7 +36,7 @@
                     "variables": {
                       "MW_ADMIN_USER": "WikiSysop",
                       "MW_ADMIN_PASS": "[POPULATE VALUE IN OVERRIDE]",
-                      "MW_SERVER_URL": "",
+                      "MW_SERVER_URL": "https://wiki-dev.creativecommons.org",
                       "MW_SITENAME": "CC Public Wiki"
                     },
                     "files": {},
