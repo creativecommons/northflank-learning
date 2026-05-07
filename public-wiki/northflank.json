@@ -49,7 +49,7 @@
                 },
                 "ref": "database",
                 "options": {
-                  "upgradeOnVersionMismatch": true
+                  "upgradeOnVersionMismatch": false
                 }
               },
               {
