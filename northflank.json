@@ -98,6 +98,38 @@
                   "type": "sequential",
                   "steps": [
                     {
+                      "kind": "Volume",
+                      "spec": {
+                        "spec": {
+                          "accessMode": "ReadWriteOnce",
+                          "storageSize": 6144,
+                          "storageClassName": "nvme"
+                        },
+                        "mounts": [
+                          {
+                            "containerMountPath": "/var/lib/mediawiki/assets",
+                            "volumeMountPath": "assets"
+                          },
+                          {
+                            "containerMountPath": "/etc/mediawiki",
+                            "volumeMountPath": "etc"
+                          },
+                          {
+                            "containerMountPath": "/var/lib/mediawiki/images",
+                            "volumeMountPath": "images"
+                          }
+                        ],
+                        "name": "mediawiki",
+                        "attachedObjects": [
+                          {
+                            "id": "${refs.public-wiki.id}",
+                            "type": "service"
+                          }
+                        ]
+                      },
+                      "ref": "mediawiki"
+                    },
+                    {
                       "kind": "CombinedService",
                       "spec": {
                         "deployment": {
@@ -135,9 +167,7 @@
                           "deploymentPlan": "nf-compute-10",
                           "buildPlan": "nf-compute-400-16"
                         },
-                        "runtimeEnvironment": {
-                          "MARIADB_DATABASE": "my_wiki"
-                        },
+                        "runtimeEnvironment": {},
                         "runtimeFiles": {},
                         "buildArguments": {},
                         "buildFiles": {},
@@ -155,7 +185,7 @@
                         "ports": [
                           {
                             "internalPort": 80,
-                            "protocol": "HTTP",
+                            "protocol": "HTTP/2",
                             "name": "p01",
                             "public": true,
                             "domains": [],
@@ -169,12 +199,14 @@
                             "disableNfDomain": false
                           }
                         ],
-                        "disabledCI": false,
                         "buildConfiguration": {
-                          "pathIgnoreRules": [],
-                          "isAllowList": false,
-                          "ciIgnoreFlagsEnabled": false
-                        }
+                          "pathIgnoreRules": [
+                            "config/",
+                            "Dockerfile"
+                          ],
+                          "isAllowList": true
+                        },
+                        "disabledCI": false
                       },
                       "ref": "public-wiki"
                     }
