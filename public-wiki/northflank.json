@@ -98,7 +98,7 @@
                   "externalAccessEnabled": false,
                   "type": "mysql",
                   "billing": {
-                    "replicas": 2,
+                    "replicas": 1,
                     "storage": 20480,
                     "storageClass": "nvme",
                     "deploymentPlan": "nf-compute-200-4"
