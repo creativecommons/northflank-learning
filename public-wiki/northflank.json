@@ -27,6 +27,32 @@
             "type": "sequential",
             "steps": [
               {
+                "kind": "Addon",
+                "spec": {
+                  "infrastructure": {
+                    "architecture": "x86"
+                  },
+                  "externalAccessEnabled": false,
+                  "type": "mysql",
+                  "billing": {
+                    "replicas": 1,
+                    "storage": 20480,
+                    "storageClass": "nvme",
+                    "deploymentPlan": "nf-compute-200-4"
+                  },
+                  "tlsEnabled": false,
+                  "version": "latest",
+                  "name": "database",
+                  "customCredentials": {
+                    "dbName": "my_wiki"
+                  }
+                },
+                "ref": "database",
+                "options": {
+                  "upgradeOnVersionMismatch": true
+                }
+              },
+              {
                 "kind": "SecretGroup",
                 "spec": {
                   "type": "secret",
@@ -88,64 +114,6 @@
                   }
                 },
                 "ref": "secrets"
-              },
-              {
-                "kind": "Addon",
-                "spec": {
-                  "infrastructure": {
-                    "architecture": "x86"
-                  },
-                  "externalAccessEnabled": false,
-                  "type": "mysql",
-                  "billing": {
-                    "replicas": 1,
-                    "storage": 20480,
-                    "storageClass": "nvme",
-                    "deploymentPlan": "nf-compute-200-4"
-                  },
-                  "tlsEnabled": false,
-                  "version": "latest",
-                  "name": "database",
-                  "customCredentials": {
-                    "dbName": "my_wiki"
-                  }
-                },
-                "ref": "database",
-                "options": {
-                  "upgradeOnVersionMismatch": true
-                }
-              },
-              {
-                "kind": "Volume",
-                "spec": {
-                  "spec": {
-                    "accessMode": "ReadWriteOnce",
-                    "storageSize": 6144,
-                    "storageClassName": "nvme"
-                  },
-                  "mounts": [
-                    {
-                      "containerMountPath": "/var/lib/mediawiki/assets",
-                      "volumeMountPath": "assets"
-                    },
-                    {
-                      "containerMountPath": "/etc/mediawiki",
-                      "volumeMountPath": "etc"
-                    },
-                    {
-                      "containerMountPath": "/var/lib/mediawiki/images",
-                      "volumeMountPath": "images"
-                    }
-                  ],
-                  "name": "volume-mediawiki",
-                  "attachedObjects": [
-                    {
-                      "id": "${refs.public-wiki.id}",
-                      "type": "service"
-                    }
-                  ]
-                },
-                "ref": "mediawiki"
               },
               {
                 "kind": "CombinedService",
@@ -215,25 +183,6 @@
                         }
                       },
                       "disableNfDomain": false
-                    },
-                    {
-                      "internalPort": 443,
-                      "public": true,
-                      "protocol": "HTTP/2",
-                      "name": "p02",
-                      "domains": [
-                        "wiki-dev.creativecommons.org"
-                      ],
-                      "security": {
-                        "sso": {},
-                        "policies": [],
-                        "credentials": [],
-                        "verificationMode": "or",
-                        "securePathConfiguration": {
-                          "rules": []
-                        }
-                      },
-                      "disableNfDomain": false
                     }
                   ],
                   "buildConfiguration": {
@@ -246,6 +195,38 @@
                   "disabledCI": false
                 },
                 "ref": "public-wiki"
+              },
+              {
+                "kind": "Volume",
+                "spec": {
+                  "spec": {
+                    "accessMode": "ReadWriteOnce",
+                    "storageSize": 6144,
+                    "storageClassName": "nvme"
+                  },
+                  "mounts": [
+                    {
+                      "containerMountPath": "/var/lib/mediawiki/assets",
+                      "volumeMountPath": "assets"
+                    },
+                    {
+                      "containerMountPath": "/etc/mediawiki",
+                      "volumeMountPath": "etc"
+                    },
+                    {
+                      "containerMountPath": "/var/lib/mediawiki/images",
+                      "volumeMountPath": "images"
+                    }
+                  ],
+                  "name": "volume-mediawiki",
+                  "attachedObjects": [
+                    {
+                      "id": "${refs.public-wiki.id}",
+                      "type": "service"
+                    }
+                  ]
+                },
+                "ref": "mediawiki"
               }
             ],
             "context": {
