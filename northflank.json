@@ -22,6 +22,87 @@
           }
         },
         {
+          "kind": "CombinedService",
+          "spec": {
+            "deployment": {
+              "instances": 1,
+              "storage": {
+                "ephemeralStorage": {
+                  "storageSize": 1024
+                },
+                "shmSize": 64
+              },
+              "docker": {
+                "configType": "default"
+              }
+            },
+            "loadBalancing": {
+              "mode": "leastConnection"
+            },
+            "buildSettings": {
+              "storage": {
+                "ephemeralStorage": {
+                  "storageSize": 16384
+                }
+              },
+              "dockerfile": {
+                "buildEngine": "buildkit",
+                "dockerWorkDir": "/",
+                "dockerFilePath": "/Dockerfile",
+                "buildkit": {
+                  "useCache": false,
+                  "cacheStorageSize": 16384
+                }
+              }
+            },
+            "billing": {
+              "deploymentPlan": "nf-compute-10",
+              "buildPlan": "nf-compute-400-16"
+            },
+            "runtimeEnvironment": {},
+            "runtimeFiles": {},
+            "buildArguments": {},
+            "buildFiles": {},
+            "dockerSecretMounts": {},
+            "infrastructure": {
+              "architecture": "x86"
+            },
+            "name": "Public Wiki",
+            "vcsData": {
+              "projectType": "github",
+              "accountLogin": "creativecommons",
+              "projectUrl": "https://github.com/creativecommons/public-wiki",
+              "projectBranch": "main"
+            },
+            "ports": [
+              {
+                "internalPort": 80,
+                "protocol": "HTTP/2",
+                "name": "p01",
+                "public": true,
+                "domains": [],
+                "security": {
+                  "policies": [],
+                  "credentials": [],
+                  "securePathConfiguration": {
+                    "rules": []
+                  }
+                },
+                "disableNfDomain": false
+              }
+            ],
+            "buildConfiguration": {
+              "pathIgnoreRules": [
+                "config/",
+                "Dockerfile"
+              ],
+              "isAllowList": true
+            },
+            "disabledCI": false
+          },
+          "ref": "public-wiki"
+        },
+        {
           "kind": "SecretGroup",
           "spec": {
             "type": "secret",
@@ -85,161 +166,61 @@
           "ref": "secrets"
         },
         {
-          "kind": "Workflow",
+          "kind": "Volume",
           "spec": {
-            "type": "parallel",
-            "context": {
-              "projectId": "${refs.project.id}"
+            "spec": {
+              "accessMode": "ReadWriteOnce",
+              "storageSize": 6144,
+              "storageClassName": "nvme"
             },
-            "steps": [
+            "mounts": [
               {
-                "kind": "Workflow",
-                "spec": {
-                  "type": "sequential",
-                  "steps": [
-                    {
-                      "kind": "Volume",
-                      "spec": {
-                        "spec": {
-                          "accessMode": "ReadWriteOnce",
-                          "storageSize": 6144,
-                          "storageClassName": "nvme"
-                        },
-                        "mounts": [
-                          {
-                            "containerMountPath": "/var/lib/mediawiki/assets",
-                            "volumeMountPath": "assets"
-                          },
-                          {
-                            "containerMountPath": "/etc/mediawiki",
-                            "volumeMountPath": "etc"
-                          },
-                          {
-                            "containerMountPath": "/var/lib/mediawiki/images",
-                            "volumeMountPath": "images"
-                          }
-                        ],
-                        "name": "mediawiki",
-                        "attachedObjects": [
-                          {
-                            "id": "${refs.public-wiki.id}",
-                            "type": "service"
-                          }
-                        ]
-                      },
-                      "ref": "mediawiki"
-                    },
-                    {
-                      "kind": "CombinedService",
-                      "spec": {
-                        "deployment": {
-                          "instances": 1,
-                          "storage": {
-                            "ephemeralStorage": {
-                              "storageSize": 1024
-                            },
-                            "shmSize": 64
-                          },
-                          "docker": {
-                            "configType": "default"
-                          }
-                        },
-                        "loadBalancing": {
-                          "mode": "leastConnection"
-                        },
-                        "buildSettings": {
-                          "storage": {
-                            "ephemeralStorage": {
-                              "storageSize": 16384
-                            }
-                          },
-                          "dockerfile": {
-                            "buildEngine": "buildkit",
-                            "dockerWorkDir": "/",
-                            "dockerFilePath": "/Dockerfile",
-                            "buildkit": {
-                              "useCache": false,
-                              "cacheStorageSize": 16384
-                            }
-                          }
-                        },
-                        "billing": {
-                          "deploymentPlan": "nf-compute-10",
-                          "buildPlan": "nf-compute-400-16"
-                        },
-                        "runtimeEnvironment": {},
-                        "runtimeFiles": {},
-                        "buildArguments": {},
-                        "buildFiles": {},
-                        "dockerSecretMounts": {},
-                        "infrastructure": {
-                          "architecture": "x86"
-                        },
-                        "name": "Public Wiki",
-                        "vcsData": {
-                          "projectType": "github",
-                          "accountLogin": "creativecommons",
-                          "projectUrl": "https://github.com/creativecommons/public-wiki",
-                          "projectBranch": "main"
-                        },
-                        "ports": [
-                          {
-                            "internalPort": 80,
-                            "protocol": "HTTP/2",
-                            "name": "p01",
-                            "public": true,
-                            "domains": [],
-                            "security": {
-                              "policies": [],
-                              "credentials": [],
-                              "securePathConfiguration": {
-                                "rules": []
-                              }
-                            },
-                            "disableNfDomain": false
-                          }
-                        ],
-                        "buildConfiguration": {
-                          "pathIgnoreRules": [
-                            "config/",
-                            "Dockerfile"
-                          ],
-                          "isAllowList": true
-                        },
-                        "disabledCI": false
-                      },
-                      "ref": "public-wiki"
-                    }
-                  ]
-                }
+                "containerMountPath": "/var/lib/mediawiki/assets",
+                "volumeMountPath": "assets"
               },
               {
-                "kind": "Addon",
-                "spec": {
-                  "infrastructure": {
-                    "architecture": "x86"
-                  },
-                  "externalAccessEnabled": false,
-                  "type": "mysql",
-                  "billing": {
-                    "replicas": 2,
-                    "storage": 20480,
-                    "storageClass": "nvme",
-                    "deploymentPlan": "nf-compute-200-4"
-                  },
-                  "tlsEnabled": false,
-                  "version": "latest",
-                  "name": "database",
-                  "customCredentials": {
-                    "dbName": "my_wiki"
-                  }
-                },
-                "ref": "database",
-                "options": {
-                  "upgradeOnVersionMismatch": true
-                }
+                "containerMountPath": "/etc/mediawiki",
+                "volumeMountPath": "etc"
+              },
+              {
+                "containerMountPath": "/var/lib/mediawiki/images",
+                "volumeMountPath": "images"
+              }
+            ],
+            "name": "mediawiki",
+            "attachedObjects": [
+              {
+                "id": "${refs.public-wiki.id}",
+                "type": "service"
               }
             ]
+          },
+          "ref": "mediawiki"
+        },
+        {
+          "kind": "Addon",
+          "spec": {
+            "infrastructure": {
+              "architecture": "x86"
+            },
+            "externalAccessEnabled": false,
+            "type": "mysql",
+            "billing": {
+              "replicas": 2,
+              "storage": 20480,
+              "storageClass": "nvme",
+              "deploymentPlan": "nf-compute-200-4"
+            },
+            "tlsEnabled": false,
+            "version": "latest",
+            "name": "database",
+            "customCredentials": {
+              "dbName": "my_wiki"
+            }
+          },
+          "ref": "database",
+          "options": {
+            "upgradeOnVersionMismatch": true
           }
         }
       ]
