@@ -137,7 +137,7 @@
                       "volumeMountPath": "images"
                     }
                   ],
-                  "name": "mediawiki",
+                  "name": "volume-mediawiki",
                   "attachedObjects": [
                     {
                       "id": "${refs.public-wiki.id}",
@@ -193,7 +193,7 @@
                   "infrastructure": {
                     "architecture": "x86"
                   },
-                  "name": "Public Wiki",
+                  "name": "service-public-wiki",
                   "vcsData": {
                     "projectType": "github",
                     "accountLogin": "creativecommons",
@@ -205,7 +205,7 @@
                       "internalPort": 80,
                       "protocol": "HTTP/2",
                       "name": "p01",
-                      "public": true,
+                      "public": false,
                       "domains": [],
                       "security": {
                         "policies": [],
