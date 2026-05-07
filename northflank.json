@@ -22,205 +22,216 @@
           }
         },
         {
-          "kind": "CombinedService",
+          "kind": "Workflow",
           "spec": {
-            "deployment": {
-              "instances": 1,
-              "storage": {
-                "ephemeralStorage": {
-                  "storageSize": 1024
-                },
-                "shmSize": 64
-              },
-              "docker": {
-                "configType": "default"
-              }
-            },
-            "loadBalancing": {
-              "mode": "leastConnection"
-            },
-            "buildSettings": {
-              "storage": {
-                "ephemeralStorage": {
-                  "storageSize": 16384
-                }
-              },
-              "dockerfile": {
-                "buildEngine": "buildkit",
-                "dockerWorkDir": "/",
-                "dockerFilePath": "/Dockerfile",
-                "buildkit": {
-                  "useCache": false,
-                  "cacheStorageSize": 16384
-                }
-              }
-            },
-            "billing": {
-              "deploymentPlan": "nf-compute-10",
-              "buildPlan": "nf-compute-400-16"
-            },
-            "runtimeEnvironment": {},
-            "runtimeFiles": {},
-            "buildArguments": {},
-            "buildFiles": {},
-            "dockerSecretMounts": {},
-            "infrastructure": {
-              "architecture": "x86"
-            },
-            "name": "Public Wiki",
-            "vcsData": {
-              "projectType": "github",
-              "accountLogin": "creativecommons",
-              "projectUrl": "https://github.com/creativecommons/public-wiki",
-              "projectBranch": "main"
-            },
-            "ports": [
+            "type": "sequential",
+            "steps": [
               {
-                "internalPort": 80,
-                "protocol": "HTTP/2",
-                "name": "p01",
-                "public": true,
-                "domains": [],
-                "security": {
-                  "policies": [],
-                  "credentials": [],
-                  "securePathConfiguration": {
-                    "rules": []
+                "kind": "SecretGroup",
+                "spec": {
+                  "type": "secret",
+                  "secretType": "environment-arguments",
+                  "priority": 10,
+                  "secrets": {
+                    "variables": {
+                      "MW_ADMIN_USER": "WikiSysop",
+                      "MW_ADMIN_PASS": "[POPULATE VALUE IN OVERRIDE]",
+                      "MW_SERVER_URL": "",
+                      "MW_SITENAME": "CC Public Wiki"
+                    },
+                    "files": {},
+                    "dockerSecretMounts": {}
+                  },
+                  "addonDependencies": [
+                    {
+                      "addonId": "${refs.database.id}",
+                      "keys": [
+                        {
+                          "keyName": "DATABASE",
+                          "aliases": [
+                            "MARIADB_DATABASE"
+                          ]
+                        },
+                        {
+                          "keyName": "PASSWORD",
+                          "aliases": [
+                            "MARIADB_ROOT_PASSWORD"
+                          ]
+                        },
+                        {
+                          "keyName": "USERNAME",
+                          "aliases": [
+                            "MARIADB_USER"
+                          ]
+                        },
+                        {
+                          "keyName": "HOST",
+                          "aliases": [
+                            "MW_DB_HOST"
+                          ]
+                        },
+                        {
+                          "keyName": "PORT",
+                          "aliases": [
+                            "MW_DB_PORT"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "externalAddonDependencies": [],
+                  "name": "secrets",
+                  "restrictions": {
+                    "restricted": false,
+                    "nfObjects": [],
+                    "tags": []
                   }
                 },
-                "disableNfDomain": false
-              }
-            ],
-            "buildConfiguration": {
-              "pathIgnoreRules": [
-                "config/",
-                "Dockerfile"
-              ],
-              "isAllowList": true
-            },
-            "disabledCI": false
-          },
-          "ref": "public-wiki"
-        },
-        {
-          "kind": "SecretGroup",
-          "spec": {
-            "type": "secret",
-            "secretType": "environment-arguments",
-            "priority": 10,
-            "secrets": {
-              "variables": {
-                "MW_ADMIN_USER": "WikiSysop",
-                "MW_ADMIN_PASS": "[POPULATE VALUE IN OVERRIDE]",
-                "MW_SERVER_URL": "",
-                "MW_SITENAME": "CC Public Wiki"
+                "ref": "secrets"
               },
-              "files": {},
-              "dockerSecretMounts": {}
-            },
-            "addonDependencies": [
               {
-                "addonId": "${refs.database.id}",
-                "keys": [
-                  {
-                    "keyName": "DATABASE",
-                    "aliases": [
-                      "MARIADB_DATABASE"
-                    ]
+                "kind": "Addon",
+                "spec": {
+                  "infrastructure": {
+                    "architecture": "x86"
                   },
-                  {
-                    "keyName": "PASSWORD",
-                    "aliases": [
-                      "MARIADB_ROOT_PASSWORD"
-                    ]
+                  "externalAccessEnabled": false,
+                  "type": "mysql",
+                  "billing": {
+                    "replicas": 2,
+                    "storage": 20480,
+                    "storageClass": "nvme",
+                    "deploymentPlan": "nf-compute-200-4"
                   },
-                  {
-                    "keyName": "USERNAME",
-                    "aliases": [
-                      "MARIADB_USER"
-                    ]
-                  },
-                  {
-                    "keyName": "HOST",
-                    "aliases": [
-                      "MW_DB_HOST"
-                    ]
-                  },
-                  {
-                    "keyName": "PORT",
-                    "aliases": [
-                      "MW_DB_PORT"
-                    ]
+                  "tlsEnabled": false,
+                  "version": "latest",
+                  "name": "database",
+                  "customCredentials": {
+                    "dbName": "my_wiki"
                   }
-                ]
-              }
-            ],
-            "externalAddonDependencies": [],
-            "name": "secrets",
-            "restrictions": {
-              "restricted": false,
-              "nfObjects": [],
-              "tags": []
-            }
-          },
-          "ref": "secrets"
-        },
-        {
-          "kind": "Volume",
-          "spec": {
-            "spec": {
-              "accessMode": "ReadWriteOnce",
-              "storageSize": 6144,
-              "storageClassName": "nvme"
-            },
-            "mounts": [
-              {
-                "containerMountPath": "/var/lib/mediawiki/assets",
-                "volumeMountPath": "assets"
+                },
+                "ref": "database",
+                "options": {
+                  "upgradeOnVersionMismatch": true
+                }
               },
               {
-                "containerMountPath": "/etc/mediawiki",
-                "volumeMountPath": "etc"
+                "kind": "Volume",
+                "spec": {
+                  "spec": {
+                    "accessMode": "ReadWriteOnce",
+                    "storageSize": 6144,
+                    "storageClassName": "nvme"
+                  },
+                  "mounts": [
+                    {
+                      "containerMountPath": "/var/lib/mediawiki/assets",
+                      "volumeMountPath": "assets"
+                    },
+                    {
+                      "containerMountPath": "/etc/mediawiki",
+                      "volumeMountPath": "etc"
+                    },
+                    {
+                      "containerMountPath": "/var/lib/mediawiki/images",
+                      "volumeMountPath": "images"
+                    }
+                  ],
+                  "name": "mediawiki",
+                  "attachedObjects": [
+                    {
+                      "id": "${refs.public-wiki.id}",
+                      "type": "service"
+                    }
+                  ]
+                },
+                "ref": "mediawiki"
               },
               {
-                "containerMountPath": "/var/lib/mediawiki/images",
-                "volumeMountPath": "images"
+                "kind": "CombinedService",
+                "spec": {
+                  "deployment": {
+                    "instances": 1,
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      },
+                      "shmSize": 64
+                    },
+                    "docker": {
+                      "configType": "default"
+                    }
+                  },
+                  "loadBalancing": {
+                    "mode": "leastConnection"
+                  },
+                  "buildSettings": {
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 16384
+                      }
+                    },
+                    "dockerfile": {
+                      "buildEngine": "buildkit",
+                      "dockerWorkDir": "/",
+                      "dockerFilePath": "/Dockerfile",
+                      "buildkit": {
+                        "useCache": false,
+                        "cacheStorageSize": 16384
+                      }
+                    }
+                  },
+                  "billing": {
+                    "deploymentPlan": "nf-compute-10",
+                    "buildPlan": "nf-compute-400-16"
+                  },
+                  "runtimeEnvironment": {},
+                  "runtimeFiles": {},
+                  "buildArguments": {},
+                  "buildFiles": {},
+                  "dockerSecretMounts": {},
+                  "infrastructure": {
+                    "architecture": "x86"
+                  },
+                  "name": "Public Wiki",
+                  "vcsData": {
+                    "projectType": "github",
+                    "accountLogin": "creativecommons",
+                    "projectUrl": "https://github.com/creativecommons/public-wiki",
+                    "projectBranch": "main"
+                  },
+                  "ports": [
+                    {
+                      "internalPort": 80,
+                      "protocol": "HTTP/2",
+                      "name": "p01",
+                      "public": true,
+                      "domains": [],
+                      "security": {
+                        "policies": [],
+                        "credentials": [],
+                        "securePathConfiguration": {
+                          "rules": []
+                        }
+                      },
+                      "disableNfDomain": false
+                    }
+                  ],
+                  "buildConfiguration": {
+                    "pathIgnoreRules": [
+                      "config/",
+                      "Dockerfile"
+                    ],
+                    "isAllowList": true
+                  },
+                  "disabledCI": false
+                },
+                "ref": "public-wiki"
               }
             ],
-            "name": "mediawiki",
-            "attachedObjects": [
-              {
-                "id": "${refs.public-wiki.id}",
-                "type": "service"
-              }
-            ]
-          },
-          "ref": "mediawiki"
-        },
-        {
-          "kind": "Addon",
-          "spec": {
-            "infrastructure": {
-              "architecture": "x86"
-            },
-            "externalAccessEnabled": false,
-            "type": "mysql",
-            "billing": {
-              "replicas": 2,
-              "storage": 20480,
-              "storageClass": "nvme",
-              "deploymentPlan": "nf-compute-200-4"
-            },
-            "tlsEnabled": false,
-            "version": "latest",
-            "name": "database",
-            "customCredentials": {
-              "dbName": "my_wiki"
+            "context": {
+              "projectId": "${refs.project.id}"
             }
-          },
-          "ref": "database",
-          "options": {
-            "upgradeOnVersionMismatch": true
           }
         }
       ]
