@@ -237,8 +237,6 @@
       ]
     }
   },
-  "name": "learning",
-  "description": "",
   "options": {
     "autorun": false,
     "concurrencyPolicy": "allow"
