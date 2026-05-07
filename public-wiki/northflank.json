@@ -239,7 +239,7 @@
   },
   "options": {
     "autorun": false,
-    "concurrencyPolicy": "allow"
+    "concurrencyPolicy": "forbid"
   },
   "gitops": {
     "repoUrl": "https://github.com/creativecommons/northflank-learning",
