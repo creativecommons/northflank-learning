@@ -30,7 +30,7 @@
             "secrets": {
               "variables": {
                 "MW_ADMIN_USER": "WikiSysop",
-                "MW_ADMIN_PASS": "F9nASCt69VX3Ai3BrliNtyPjrUj94RdE",
+                "MW_ADMIN_PASS": "[POPULATE VALUE IN OVERRIDE]",
                 "MW_SERVER_URL": "",
                 "MW_SITENAME": "CC Public Wiki"
               },
