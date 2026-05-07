@@ -9,7 +9,7 @@
           "kind": "Project",
           "ref": "project",
           "spec": {
-            "name": "learning",
+            "name": "public-wiki",
             "color": "#57637A",
             "networking": {
               "tailscale": {
