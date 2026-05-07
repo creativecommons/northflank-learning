@@ -215,6 +215,25 @@
                         }
                       },
                       "disableNfDomain": false
+                    },
+                    {
+                      "internalPort": 443,
+                      "public": true,
+                      "protocol": "HTTP/2",
+                      "name": "p02",
+                      "domains": [
+                        "wiki-dev.creativecommons.org"
+                      ],
+                      "security": {
+                        "sso": {},
+                        "policies": [],
+                        "credentials": [],
+                        "verificationMode": "or",
+                        "securePathConfiguration": {
+                          "rules": []
+                        }
+                      },
+                      "disableNfDomain": false
                     }
                   ],
                   "buildConfiguration": {
