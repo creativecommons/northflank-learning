@@ -171,7 +171,7 @@
                   "ports": [
                     {
                       "internalPort": 80,
-                      "protocol": "HTTP/2",
+                      "protocol": "HTTP",
                       "name": "p01",
                       "public": true,
                       "domains": [
