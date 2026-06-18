@@ -150,7 +150,7 @@
                     }
                   },
                   "billing": {
-                    "deploymentPlan": "nf-compute-10",
+                    "deploymentPlan": "nf-compute-100-1",
                     "buildPlan": "nf-compute-400-16"
                   },
                   "runtimeEnvironment": {},
