@@ -174,7 +174,9 @@
                       "protocol": "HTTP/2",
                       "name": "p01",
                       "public": true,
-                      "domains": [],
+                      "domains": [
+                        "wiki-dev.creativecommons.org"
+                      ],
                       "security": {
                         "policies": [],
                         "credentials": [],
@@ -182,7 +184,7 @@
                           "rules": []
                         }
                       },
-                      "disableNfDomain": false
+                      "disableNfDomain": true
                     }
                   ],
                   "buildConfiguration": {
