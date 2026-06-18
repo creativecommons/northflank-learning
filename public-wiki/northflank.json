@@ -192,7 +192,18 @@
                     ],
                     "isAllowList": true
                   },
-                  "disabledCI": false
+                  "disabledCI": false,
+                  "healthChecks": [
+                    {
+                      "type": "livenessProbe",
+                      "protocol": "TCP",
+                      "initialDelaySeconds": 5,
+                      "periodSeconds": 60,
+                      "timeoutSeconds": 10,
+                      "failureThreshold": 3,
+                      "port": 80
+                    }
+                  ]
                 },
                 "ref": "public-wiki"
               },
