@@ -201,7 +201,7 @@
                 "spec": {
                   "spec": {
                     "accessMode": "ReadWriteOnce",
-                    "storageSize": 6144,
+                    "storageSize": 10240,
                     "storageClassName": "nvme"
                   },
                   "mounts": [
