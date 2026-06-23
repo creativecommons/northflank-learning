@@ -27,6 +27,14 @@
             "type": "sequential",
             "steps": [
               {
+                "kind": "ReleaseStage",
+                "spec": {
+                  "position": 2,
+                  "name": "production"
+                },
+                "ref": "production"
+              },
+              {
                 "kind": "Addon",
                 "spec": {
                   "infrastructure": {
