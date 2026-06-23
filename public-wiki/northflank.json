@@ -22,18 +22,19 @@
           }
         },
         {
+          "kind": "ReleaseStage",
+          "spec": {
+            "position": 2,
+            "name": "production",
+            "projectId": "${refs.project.id}"
+          },
+          "ref": "production"
+        },
+        {
           "kind": "Workflow",
           "spec": {
             "type": "sequential",
             "steps": [
-              {
-                "kind": "ReleaseStage",
-                "spec": {
-                  "position": 2,
-                  "name": "production"
-                },
-                "ref": "production"
-              },
               {
                 "kind": "Addon",
                 "spec": {
@@ -53,7 +54,42 @@
                   "name": "database",
                   "customCredentials": {
                     "dbName": "my_wiki"
-                  }
+                  },
+                  "backupSchedules": [
+                    {
+                      "backupType": "snapshot",
+                      "scheduling": {
+                        "interval": "daily",
+                        "minute": [
+                          0
+                        ],
+                        "hour": [
+                          4
+                        ],
+                        "day": [
+                          0
+                        ]
+                      },
+                      "retentionTime": 14
+                    },
+                    {
+                      "backupType": "snapshot",
+                      "scheduling": {
+                        "interval": "weekly",
+                        "minute": [
+                          0
+                        ],
+                        "hour": [
+                          5
+                        ],
+                        "day": [
+                          6
+                        ]
+                      },
+                      "retentionTime": 120
+                    }
+                  ],
+                  "stageId": "${refs.production.id}"
                 },
                 "ref": "database",
                 "options": {
@@ -119,7 +155,8 @@
                     "restricted": false,
                     "nfObjects": [],
                     "tags": []
-                  }
+                  },
+                  "stageId": "${refs.production.id}"
                 },
                 "ref": "secrets"
               },
@@ -142,18 +179,18 @@
                     "mode": "leastConnection"
                   },
                   "buildSettings": {
-                    "storage": {
-                      "ephemeralStorage": {
-                        "storageSize": 16384
-                      }
-                    },
                     "dockerfile": {
-                      "buildEngine": "buildkit",
                       "dockerWorkDir": "/",
                       "dockerFilePath": "/Dockerfile",
+                      "buildEngine": "buildkit",
                       "buildkit": {
                         "useCache": false,
                         "cacheStorageSize": 16384
+                      }
+                    },
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 16384
                       }
                     }
                   },
@@ -213,7 +250,8 @@
                       "failureThreshold": 3,
                       "port": 80
                     }
-                  ]
+                  ],
+                  "stageId": "${refs.production.id}"
                 },
                 "ref": "public-wiki"
               },
@@ -245,7 +283,8 @@
                       "id": "${refs.public-wiki.id}",
                       "type": "service"
                     }
-                  ]
+                  ],
+                  "stageId": "${refs.production.id}"
                 },
                 "ref": "mediawiki"
               }
