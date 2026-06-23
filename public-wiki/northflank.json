@@ -105,7 +105,7 @@
                   "secrets": {
                     "variables": {
                       "MW_ADMIN_USER": "WikiSysop",
-                      "MW_ADMIN_PASS": "[POPULATE VALUE IN OVERRIDE]",
+                      "MW_ADMIN_PASS": "${secrets.prod-public-wiki.values.mw-admin-pass",
                       "MW_SERVER_URL": "https://wiki-dev.creativecommons.org",
                       "MW_SITENAME": "CC Public Wiki"
                     },
